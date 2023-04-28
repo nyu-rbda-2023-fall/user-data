@@ -23,9 +23,9 @@ public class Clean {
 
         job.setMapperClass(UserCleanMapper.class);
 
-        job.setNumReduceTasks(0);
+        //job.setNumReduceTasks(1);
 
-        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputKeyClass(NullWritable.class);
         job.setMapOutputValueClass(UserDataTuple.class);
 
         System.exit(job.waitForCompletion(true) ? 0 : 1);

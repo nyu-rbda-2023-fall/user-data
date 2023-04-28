@@ -1,9 +1,11 @@
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.NullWritable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
 public class UserDataTuple implements Writable{
+    private String id = "";
     private String name = "";
     private String review_count = "";
     private String average_stars = "";
@@ -12,11 +14,10 @@ public class UserDataTuple implements Writable{
 
     @Override
     public String toString() {
-        return "UserDataTuple{" +
-                "name='" + name + '\'' +
-                ", review_count='" + review_count + '\'' +
-                ", average_stars='" + average_stars + '\'' +
-                '}';
+        return  id + ',' +
+                name + ',' +
+                review_count + ',' +
+                average_stars;
     }
 
     public String getName() {
@@ -26,7 +27,12 @@ public class UserDataTuple implements Writable{
     public void setName(String name) {
         this.name = name;
     }
-
+    public String getId(){
+	    return id; 
+		     }
+    public void setId(String id){
+	   this.id = id;
+    }
     public String getReview_count(){
         return review_count;
     }
@@ -45,15 +51,18 @@ public class UserDataTuple implements Writable{
 
     @Override
     public void readFields(DataInput in)throws IOException {
-        name = in.readUTF();
+        id = in.readUTF();
+	name = in.readUTF();
         review_count = in.readUTF();
         average_stars = in.readUTF();
     }
 
     @Override
     public void write(DataOutput out) throws IOException {
-        out.writeUTF(name);
+        out.writeUTF(id);
+	out.writeUTF(name);
         out.writeUTF(review_count);
         out.writeUTF(average_stars);
+	
     }
 }

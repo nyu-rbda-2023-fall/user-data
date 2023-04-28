@@ -1,6 +1,7 @@
 import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 enum ANOMALY{
     MISSING
 }
-public class UserCleanMapper extends Mapper<LongWritable, Text, Text, UserDataTuple>
+public class UserCleanMapper extends Mapper<LongWritable, Text, NullWritable, UserDataTuple>
 {
     UserDataTuple userDataTuple = new UserDataTuple();
     private ObjectMapper mapper = new ObjectMapper();
@@ -36,11 +37,11 @@ public class UserCleanMapper extends Mapper<LongWritable, Text, Text, UserDataTu
             String average_stars = jsonNode.get("average_stars").asText();
 
             if(isValidTuple(name, review_count, average_stars)) {
+		userDataTuple.setId(user_id);
                 userDataTuple.setName(name);
                 userDataTuple.setReview_count(review_count);
                 userDataTuple.setAverage_stars(average_stars);
-
-                context.write(new Text(user_id), userDataTuple);
+                context.write(NullWritable.get(), userDataTuple);
             }
             else context.getCounter(ANOMALY.MISSING).increment(1);
 
