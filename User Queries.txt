@@ -1,0 +1,63 @@
+create external table users (userId string, name string, review_count float,  average_stars float) row format delimited fields terminated 
+by ',' location '/user/aa9381_nyu_edu/userInput/';
+
+create external table reviews (reviewId string, userId string, businessId string, stars float, useful float, cool float, funny float) 
+row format delimited fields terminated by ',' location '/user/aa9381_nyu_edu/reviewInput/';
+
+create external table businessdata 
+(businessId string, name string, address string, 
+city string, state string, postal_code string, 
+latitude float, longitude float, stars float, 
+review_count int, categories string) row format 
+delimited fields terminated by ',' location '/user/aa9381_nyu_edu/businessInput/completedata';
+
+
+SELECT 
+	u.userId,
+	u.name,
+	u.review_count
+FROM
+	users u
+ORDER BY
+u.review_count DESC
+LIMIT 10;
+
+SELECT users.userid as user_id, users.name as user_name,
+users.review_count as review_count, 
+COUNT(DISTINCT reviews.businessid) AS num_distinct_businesses_reviewed
+FROM users
+JOIN reviews ON users.userid = reviews.userid
+GROUP BY users.userid, users.name, users.review_count
+ORDER BY users.review_count DESC
+LIMIT 10;
+
+//extra queries
+SELECT users.userid, users.name, COUNT(DISTINCT business.city) AS num_locations_reviewed
+FROM users
+JOIN reviews ON users.userid = reviews.userid
+JOIN business ON reviews.businessid = business.businessId
+GROUP BY users.userid, users.name
+ORDER BY num_locations_reviewed DESC
+LIMIT 10;
+
+
+SELECT state, COUNT(*) AS num_businesses
+FROM business
+GROUP BY state;
+
+//Executed on ten different user ids.
+SELECT b.state, SUM(b.review_count) as total_review_count, COUNT(DISTINCT b.business_id) AS num_businesses_reviewed
+FROM users u
+JOIN reviews r ON u.userid = r.userid 
+JOIN businessdata b ON r.businessid = b.business_id
+WHERE u.userid = 'RtGqdDBvvBCjcu5dUqwfzA'
+GROUP BY b.state;
+
+
+SELECT b.name, b.business_id, b.state, b.city, 
+b.categories FROM users u JOIN reviews r ON u.userid = r.userid 
+JOIN businessdata b ON r.businessid = b.business_id 
+WHERE u.userid = 'Hi10sGSZNxQH3NLyWSZ1oA' group by 
+b.business_id, b.name, b.city, b.state, b.categories;
+
+
